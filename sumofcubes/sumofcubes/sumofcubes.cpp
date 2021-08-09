@@ -2,19 +2,38 @@
 //
 
 #include <iostream>
+#include <cassert>
+
+using namespace std;
+
+unsigned int sum_cubes(unsigned int n) {
+	int res = 0;
+	for (int i = 1; i <= n; ++i) {
+		res += (i * i * i);
+	}
+	return res;
+}
+
+void TestCases() {
+	assert(sum_cubes(1) == 1);
+	assert(sum_cubes(2) == 9);
+	assert(sum_cubes(3) == 36);
+	assert(sum_cubes(123) == 58155876);
+}
+
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    
+	TestCases();
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+
+/*
+Write a function that takes a positive integer n, sums all the cubed values from 1 to n, and returns that sum.
+
+Assume that the input n will always be a positive integer.
+
+Examples:
+*/
