@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fibonacci.cpp">
+    <ClCompile Include="sortarraybystringlength.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

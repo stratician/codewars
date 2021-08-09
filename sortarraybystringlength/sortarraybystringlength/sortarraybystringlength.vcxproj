@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5758308d-7e48-4658-b0ef-7681d5703245}</ProjectGuid>
-    <RootNamespace>fibonacci</RootNamespace>
+    <ProjectGuid>{ea0e22ad-fcf7-4d85-8afe-e8742793ca9b}</ProjectGuid>
+    <RootNamespace>sortarraybystringlength</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fibonacci.cpp" />
+    <ClCompile Include="sortarraybystringlength.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
