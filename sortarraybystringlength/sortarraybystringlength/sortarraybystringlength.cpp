@@ -41,6 +41,9 @@ std::vector<std::string> Kata::sortByLengthQS(std::vector<std::string> array)
 		}
 	}
 
+	// test
+
+
 	return array;
 
 }
