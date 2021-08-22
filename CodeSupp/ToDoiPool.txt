@@ -1,0 +1,739 @@
+#ifdef 0 /// bypass folloing code for now 
+	else if(g_build.gameType == GAMETYPE_POOL)
+	{
+		
+		// draw racks won for 1P & 2P
+		int tblIdx = m_lobby->GetTableIdxFromPlayer(m_playerSockIdx);
+		if(tblIdx != -1)
+		if(m_table[tblIdx].raceTo > 0) // 1+ => 2+ racks.
+		{							 
+			/*
+			Mgfx_idx = 255;
+			sprintf(buffer, " Racks ");
+			Mgfx_gditext(4,0, buffer, Mgfx_idx);
+			sprintf(buffer, " %d ", m_table[tblIdx].racksWon1P);
+			Mgfx_gditext(4,16, buffer, Mgfx_idx);
+
+			sprintf(buffer, " Racks ");
+			Mgfx_gditext(m_cx-4,0, buffer, Mgfx_idx, MGFX_GDITEXT_RIGHT);
+			sprintf(buffer, " %d ", m_table[tblIdx].racksWon2P);
+			Mgfx_gditext(m_cx-4,16, buffer, Mgfx_idx, MGFX_GDITEXT_RIGHT);
+			*/
+			//Mgfx_idx = 255;
+			//sprintf(buffer, " Racks ");
+			//Mgfx_gditext(4,0, buffer, Mgfx_idx);
+			if(m_snooker->m_customTable->m_type != CTTYPE_BREAK)
+				{
+				sprintf(buffer, " r ");
+				Mgfx_fillrect(4, 0, 48, 14, Mgfx_rgbcolor(0,0,0));
+				//Mgfx_hollowrect(4, 0, 48, 28, Mgfx_rgbcolor(20,20,20));
+				Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, 4+24, 4, MGFX_FNTDRAW_CENTER);
+				sprintf(buffer, " %d ", m_table[tblIdx].racksWon1P);
+				//Mgfx_gditext(4,16, buffer, Mgfx_idx);			
+				Mgfx_fillrect(4, 14, 32, 14, Mgfx_rgbcolor(0,0,0));
+				Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, 4+24, 16, MGFX_FNTDRAW_CENTER);						
+
+				//sprintf(buffer, " Racks ");
+				//Mgfx_gditext(m_cx-4,0, buffer, Mgfx_idx, MGFX_GDITEXT_RIGHT);
+				sprintf(buffer, " r ");
+				Mgfx_fillrect(m_cx-4-48, 0, 48, 14, Mgfx_rgbcolor(0,0,0));
+				//Mgfx_hollowrect(m_cx-4-48, 0, 48, 28, Mgfx_rgbcolor(20,20,20));
+				Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, m_cx-4-24, 4, MGFX_FNTDRAW_CENTER);
+				sprintf(buffer, " %d ", m_table[tblIdx].racksWon2P);
+				//Mgfx_gditext(m_cx-4,16, buffer, Mgfx_idx, MGFX_GDITEXT_RIGHT);
+				Mgfx_fillrect(m_cx-4-32, 14, 32, 14, Mgfx_rgbcolor(0,0,0));
+				Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, m_cx-4-24, 16, MGFX_FNTDRAW_CENTER);
+				}
+		}
+
+		/*
+		x = 20;
+		y = m_cx*0.5f - (7*32);
+		for(int n=0;n<7;n++) // render 2d object-balls (spots)
+		{
+			
+			Mgfx_sprdraw(&m_snooker->m_spritePBall[n],-16 + m_origin.left + x, -16 + m_origin.top + y + n*32);
+		}
+		
+		x = m_cx - 20;
+		y = m_cx*0.5f - (7*32);
+		for(n=0;n<7;n++) // render 2d object-balls (stripes)
+		{
+			
+			Mgfx_sprdraw(&m_snooker->m_spritePBall[8+n],-16 + m_origin.left + x, -16 + m_origin.top + y + n*32);
+		}
+		*/
+		///////////////////////////////////
+		//if(!m_snooker->m_bPracticeMode) // check for internet play mode
+		{
+			if(m_snooker->m_customTable->m_type == CTTYPE_8BALL || m_snooker->m_customTable->m_type == CTTYPE_UKPOOL)
+			{
+				int n;
+				int m;
+				int fy = 0;
+				int ballColour = 0;
+				int dist;
+				BOOL bFoundPot = FALSE;
+
+
+				if(m_snooker->m_customTable->m_type == CTTYPE_UKPOOL) dist = 22;
+					else dist = 18;
+
+		
+#ifdef LOAD_NEXTBALLLIST
+				// draw 'Next' small balls
+				if(m_snooker->m_cueBallSelect != 2) // if in simulation mode (cueballselect = 2), don't draw!
+				{
+					// draw next balls list
+					for(m=0;m<15;m++)
+					{			
+						if(m==0)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f)/*-(18-6+1)*18)*/ + m*dist + 11 + 45+4, 1+8, MGFX_FNTDRAW_CENTER);
+														   
+						bFoundPot = FALSE;
+						for(n=1;n<=15;n++)
+						{
+							if(g_pottedSpots[n] == (m+1) || g_pottedStripes[n] == (m+1)) // potted ball?
+							{
+								bFoundPot = TRUE;
+								break;
+							}							
+						}
+
+						//bFoundPot = FALSE;
+
+						if(!bFoundPot)
+						{
+							//Mgfx_fillrect((m_cx*0.5f-17.4*18) + m*18, 1, 24, 24, Mgfx_rgbcolor(0,0,0));
+							if(m_snooker->m_customTable->m_type == CTTYPE_UKPOOL) 
+								{
+								if(m<=6) Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[16], (m_cx*0.5f) + 30 + m*dist + 45, 1);
+								else if(m>=8) Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[15], (m_cx*0.5f) + 30 + m*dist + 45, 1);
+								else Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[m], (m_cx*0.5f) + 30 + m*dist + 45, 1);
+								}
+							else Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[m], (m_cx*0.5f) + 30 + m*dist + 45, 1);//-16 + 64 + m*(16+4), -16 + 10);		
+						}
+												
+						// draw numbers
+						sprintf(buffer, "%d", 1+m);
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + m*dist + 11 + 45, 1+22, MGFX_FNTDRAW_CENTER);
+					} // end for m
+
+					// draw '-' to indicate which ball selected					
+					if(m_snooker->m_cueBallSelect != 0)
+					{
+						int selectBall = m_snooker->m_selectBall;
+						if(selectBall>=1 && selectBall<=15) // object-balls
+						{
+							sprintf(buffer, "-");
+							Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (selectBall-1)*dist + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+						}
+						else if(selectBall == 0) // cue-ball
+						{
+							int colour = m_snooker->m_testBall->m_colour;
+							if(colour>=1 && colour<=15)
+							{
+								sprintf(buffer, "-");
+								Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (colour-1)*dist + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+							}
+						}
+					}
+					
+					// draw black line cross through balls not to be potted
+					if(m_snooker->m_bTurn1P) // 1P turn
+					{
+							if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+							Mgfx_fillrect(m_cx*0.5f + 36 + 8*dist + 45, 10, 7*(dist-1), 5, Mgfx_rgbcolor(0,0,0));
+						else if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+							Mgfx_fillrect(m_cx*0.5f + 36 + 0*dist + 45, 10, 7*(dist-1), 5, Mgfx_rgbcolor(0,0,0));
+					}
+					else // 2P turn
+					{
+						if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+							Mgfx_fillrect(m_cx*0.5f + 36 + 0*dist + 45, 10, 7*(dist-1), 5, Mgfx_rgbcolor(0,0,0));
+						else if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+							Mgfx_fillrect(m_cx*0.5f + 36 + 8*dist + 45, 10, 7*(dist-1), 5, Mgfx_rgbcolor(0,0,0));						
+					}					
+				}
+#endif //LOAD_NEXTBALLLIST
+
+				// draw spots
+				for(m=0;m<16;m++)
+				if(g_pottedSpots[m] != -1)
+					{			
+					ballColour = m_snooker->m_ball[g_pottedSpots[m]]->m_colour; 
+
+					if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+						x = 20;			
+					else if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+						x = m_cx - 20;
+					else break;
+					
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					if(ballColour>=1)
+						{
+						
+						if(m_snooker->m_customTable->m_type == CTTYPE_UKPOOL) 
+							{
+							if((ballColour-1)<=6) Mgfx_sprdraw(&m_snooker->m_spritePBall[18],-16 + x, -16 + y + fy);
+							else if((ballColour-1)>=8) Mgfx_sprdraw(&m_snooker->m_spritePBall[17],-16 + x, -16 + y + fy);
+							else Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+							}
+						else Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+						
+						}
+					fy -= 32;
+					}
+
+					
+				
+				// draw stripes
+				fy = 0;
+				ballColour = 0;
+				for(m=0;m<16;m++)
+				if(g_pottedStripes[m] != -1)
+					{			
+					ballColour = m_snooker->m_ball[g_pottedStripes[m]]->m_colour; 
+					
+					
+					if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+						x = 20;
+					else if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+						x = m_cx - 20;
+					else break;
+
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					if(ballColour>=1)
+						{
+						if(m_snooker->m_customTable->m_type == CTTYPE_UKPOOL) 
+							{
+							if((ballColour-1)<=6) Mgfx_sprdraw(&m_snooker->m_spritePBall[18],-16 + x, -16 + y + fy);
+							else if((ballColour-1)>=8) Mgfx_sprdraw(&m_snooker->m_spritePBall[17],-16 + x, -16 + y + fy);
+							else Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+							}
+						else Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+						}
+					
+					fy -= 32;
+					}
+			}
+			else if(m_snooker->m_customTable->m_type == CTTYPE_9BALL)
+			{
+				int n;
+				int m;
+				int fy = 0;
+				int ballColour = 0;
+				BOOL bFoundPot = FALSE;
+				/*
+				{
+					char buff[256];
+					for(n=0;n<=9;n++)
+					{
+						sprintf(buff, "g_pottedSpots[%d] = %d", n, g_pottedSpots[n]);
+						ErrorMessage(this, buff);
+					}
+				}
+				*/
+
+#ifdef LOAD_NEXTBALLLIST				
+				// draw 'Next' small balls
+				if(m_snooker->m_cueBallSelect != 2) // if in simulation mode (cueballselect = 2), don't draw!
+				{
+					for(m=0;m<9;m++)
+					{			
+						if(m==0)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f)/*-(18-6+1)*18)*/ + m*18 + 11 + 45+4, 1+8, MGFX_FNTDRAW_CENTER);
+														   
+						bFoundPot = FALSE;
+						for(n=1;n<=9;n++)
+						if(g_pottedSpots[n] == (m+1)) // potted ball?
+						{
+							bFoundPot = TRUE;
+							break;
+						}
+
+						if(!bFoundPot)
+						{
+							//Mgfx_fillrect((m_cx*0.5f-17.4*18) + m*18, 1, 24, 24, Mgfx_rgbcolor(0,0,0));
+							Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[m], (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 45, 1);//-16 + 64 + m*(16+4), -16 + 10);		
+						}
+											
+						sprintf(buffer, "%d", 1+m);
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 11 + 45, 1+22, MGFX_FNTDRAW_CENTER);
+					} // end for m
+					
+					// draw '-' to indicate which ball selected					
+					if(m_snooker->m_cueBallSelect != 0)
+					{
+						int selectBall = m_snooker->m_selectBall;
+						if(selectBall>=1 && selectBall<=15) // object-balls
+						{
+							sprintf(buffer, "-");
+							Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (selectBall-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+						}
+						else if(selectBall == 0) // cue-ball
+						{
+							int colour = m_snooker->m_testBall->m_colour;
+							if(colour>=1 && colour<=15)
+							{
+								sprintf(buffer, "-");
+								Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (colour-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+							}
+						}
+					}
+				}
+#endif //LOAD_NEXTBALLLIST
+
+				// draw spots
+				ballColour = 0;
+				for(m=0;m<16;m++)
+				if(g_pottedSpots[m] != -1)
+				{			
+					ballColour = m_snooker->m_ball[g_pottedSpots[m]]->m_colour;
+
+					//if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+					if(m_snooker->m_bTurn1P)
+						x = 20;			
+					//else if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+					else
+						x = m_cx - 20;
+					
+					
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					if(ballColour>=1)
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+					fy -= 32;
+				}
+			}
+			else if((m_snooker->m_customTable->m_type == CTTYPE_ROTATIONBALL) )
+			{
+				int n;
+				int m;
+				int fy = 0;
+				int ballColour = 0;
+				BOOL bFoundPot = FALSE;
+
+#ifdef LOAD_NEXTBALLLIST
+				// draw 'Next' small balls
+				if(m_snooker->m_cueBallSelect != 2) // if in simulation mode (cueballselect = 2), don't draw!
+				{
+					for(m=0;m<15;m++)
+					{			
+						if(m==0)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f)/*-(18-6+1)*18)*/ + m*18 + 11 + 45+4, 1+8, MGFX_FNTDRAW_CENTER);
+														   
+						bFoundPot = FALSE;
+						for(n=1;n<=15;n++)
+						if(g_pottedSpots[n] == (m+1)) // potted ball?
+						{
+							bFoundPot = TRUE;
+							break;
+						}
+
+						if(!bFoundPot)
+						{
+							//Mgfx_fillrect((m_cx*0.5f-17.4*18) + m*18, 1, 24, 24, Mgfx_rgbcolor(0,0,0));
+							Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[m], (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 45, 1);//-16 + 64 + m*(16+4), -16 + 10);		
+						}
+											
+						sprintf(buffer, "%d", 1+m);
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 11 + 45, 1+22, MGFX_FNTDRAW_CENTER);
+					} // end for m
+
+					// draw '-' to indicate which ball selected					
+					if(m_snooker->m_cueBallSelect != 0)
+					{
+						int selectBall = m_snooker->m_selectBall;
+						if(selectBall>=1 && selectBall<=15) // object-balls
+						{
+							sprintf(buffer, "-");
+							Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (selectBall-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+						}
+						else if(selectBall == 0) // cue-ball
+						{
+							int colour = m_snooker->m_testBall->m_colour;
+							if(colour>=1 && colour<=15)
+							{
+								sprintf(buffer, "-");
+								Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (colour-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+							}
+						}
+					}
+				}
+#endif //LOAD_NEXTBALLLIST
+				
+				// draw lowest value ball left on table
+				ballColour = m_snooker->m_colourseq;
+				if(ballColour == 0)
+					ballColour = 1;
+
+				if(m_snooker->m_bTurn1P)
+					x = 20;			
+				else
+					x = m_cx - 20;
+				
+				y = m_cx*0.5f - (1*32);
+				if(ballColour>=1)
+				Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+				fy -= 32;
+
+				//m_pParent->m_score1P
+				// draw scores for 1P & 2P
+				//int tblIdx = m_lobby->GetTableIdxFromPlayer(m_playerSockIdx);
+				//if(tblIdx != -1)				
+				//if(m_table[tblIdx].gameType == 2) // RotationBall gametype
+				{							 
+						
+					//Mgfx_fillrect(4, (m_cx*0.5f) - 128-2, 48, 32, Mgfx_rgbcolor(0,0,0));
+					sprintf(buffer, " p ");
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, 4+24,  (m_cx*0.5f) - 128, MGFX_FNTDRAW_CENTER);
+					//sprintf(buffer, " %d ", m_snooker->m_score1P);
+					sprintf(buffer, "%d(61)", m_snooker->m_score1P);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, 4+24, (m_cx*0.5f) - 128+16, MGFX_FNTDRAW_CENTER);						
+										
+					//Mgfx_fillrect(m_cx-4-48, (m_cx*0.5f) - 128-2, 48, 32, Mgfx_rgbcolor(0,0,0));
+					sprintf(buffer, " p ");
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, m_cx-4-24,  (m_cx*0.5f) - 128, MGFX_FNTDRAW_CENTER);
+					//sprintf(buffer, " %d ", m_snooker->m_score2P);
+					sprintf(buffer, "%d(61)", m_snooker->m_score2P);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, m_cx-4-24, (m_cx*0.5f) - 128+16, MGFX_FNTDRAW_CENTER);
+
+					// 'Next'
+					if(m_snooker->m_bTurn1P)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", 4+24,  (m_cx*0.5f) - 128+70, MGFX_FNTDRAW_CENTER);
+					else 
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", m_cx-4-24,  (m_cx*0.5f) - 128+70, MGFX_FNTDRAW_CENTER);
+				}
+				
+			}
+else if((m_snooker->m_customTable->m_type == CTTYPE_BREAK) )
+			{
+				int n;
+				int m;
+				int fy = 0;
+				int ballColour = 0;
+				BOOL bFoundPot = FALSE;
+
+#ifdef LOAD_NEXTBALLLIST
+				// draw 'Next' small balls
+				/*
+				if(m_snooker->m_cueBallSelect != 2) // if in simulation mode (cueballselect = 2), don't draw!
+				{
+					if(m_snooker->m_colourseq==1) 
+						{
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f) + 0*18 + 11 + 45+10, 1+8, MGFX_FNTDRAW_CENTER);
+						Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[17], (m_cx*0.5f) + 30 + 0*18 + 45, 1);
+						}
+					else{
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f) + 0*18 + 11 + 45+10, 1+8, MGFX_FNTDRAW_CENTER);
+						Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[18], (m_cx*0.5f) + 30 + 1*21 + 45, 1);
+						Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[19], (m_cx*0.5f) + 30 + 2*21 + 45, 1);
+						Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[20], (m_cx*0.5f) + 30 + 3*21 + 45, 1);
+						}
+					} // end for m
+				*/
+					
+				
+#endif //LOAD_NEXTBALLLIST
+				
+				// draw Legal Ball to Pot ball left on table
+
+				int tblIdx = m_lobby->GetTableIdxFromPlayer(m_playerSockIdx);
+				
+
+				if(ballColour == 0)
+					ballColour = 1;
+
+				if(m_snooker->m_bTurn1P)
+					x = 500;			
+				else
+					x = m_cx - 500;
+		
+				
+				if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+					else y = m_cx*0.35f - (1*32);
+
+
+				if(m_snooker->m_colourseq<=1)  Mgfx_sprdraw(&m_snooker->m_spritePBall[19], 10, (m_cx*0.5f) - 128 - 32);
+				else if(m_snooker->m_colourseq == 11) Mgfx_sprdraw(&m_snooker->m_spritePBall[20], 10, (m_cx*0.5f) - 128 - 32);
+				else if(m_snooker->m_colourseq == 12) Mgfx_sprdraw(&m_snooker->m_spritePBall[21], 10, (m_cx*0.5f) - 128 - 32);
+				else if(m_snooker->m_colourseq == 13) Mgfx_sprdraw(&m_snooker->m_spritePBall[22], 10, (m_cx*0.5f) - 128 - 32);
+				else{
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[20], 10, (m_cx*0.5f) - 128 - 32);
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[21], 10, (m_cx*0.5f) - 128 - 64);
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[22], 10, (m_cx*0.5f) - 128 - 96);
+					}							 
+						
+					if(tblIdx != -1)
+					{
+					sprintf(buffer, " %d", m_table[tblIdx].racksWon1P);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) - 70 , 10, MGFX_FNTDRAW_CENTER);
+	
+					sprintf(buffer, " %d", m_table[tblIdx].racksWon2P);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 70, 10, MGFX_FNTDRAW_CENTER);
+
+					sprintf(buffer, "(%d)", m_table[tblIdx].raceTo+1);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f), 2, MGFX_FNTDRAW_CENTER);
+
+
+					}
+					sprintf(buffer, "%d (b %d)", m_snooker->m_score1P, m_snooker->m_highBreaks1P[0]);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) - 70, 26, MGFX_FNTDRAW_CENTER);						
+					
+
+					sprintf(buffer, "%d (b %d)", m_snooker->m_score2P, m_snooker->m_highBreaks2P[0]);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 70, 26, MGFX_FNTDRAW_CENTER);
+
+/*					sprintf(buffer, " p ");
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, 4+24,  (m_cx*0.5f) - 128, MGFX_FNTDRAW_CENTER);
+
+					sprintf(buffer, "%d (brk: %d)", m_snooker->m_score1P, m_snooker->m_highBreaks1P[0]);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, 4+24, (m_cx*0.5f) - 128+16, MGFX_FNTDRAW_CENTER);						
+										
+
+					sprintf(buffer, " p ");
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, m_cx-4-24,  (m_cx*0.5f) - 128, MGFX_FNTDRAW_CENTER);
+
+					sprintf(buffer, "%d (brk: %d)", m_snooker->m_score2P, m_snooker->m_highBreaks2P[0]);
+					Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, m_cx-4-24, (m_cx*0.5f) - 128+16, MGFX_FNTDRAW_CENTER);
+*/ 
+
+					// 'Next'
+					if(m_snooker->m_bTurn1P)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", 24,  (m_cx*0.5f) - 128 + 8, MGFX_FNTDRAW_CENTER);
+					else 
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", 24,  (m_cx*0.5f) - 128 + 8, MGFX_FNTDRAW_CENTER);
+				
+			}	
+			
+			else if(m_snooker->m_customTable->m_type == CTTYPE_BOWLS)
+			{
+				int n, m;
+				int fy = 0;
+				int ballColour = 0;
+				int _blues = 0, _reds = 0;
+
+				for(n=1;n<=5;n++)
+					if(!m_snooker->m_customTable->RefereeBowlsBallOnTable(n))
+						_blues++;
+
+				for(n=6;n<=10;n++)
+					if(!m_snooker->m_customTable->RefereeBowlsBallOnTable(n))
+						_reds++;
+
+				// draw blue bowls
+				for(m=0;m<_blues;m++)
+				{			
+					x = 20;				
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[15],-16 + x, -16 + y + fy);
+					fy -= 32;
+				}
+
+				// draw red bowls
+				fy = 0;
+				ballColour = 0;
+				for(m=0;m<_reds;m++)			
+				{			
+					x = m_cx - 20;
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[16],-16 + x, -16 + y + fy);
+					fy -= 32;
+				}
+			}
+
+			//**
+			else if(m_snooker->m_customTable->m_type == CTTYPE_6BALL)
+			{
+				int n;
+				int m;
+				int fy = 0;
+				int ballColour = 0;
+				BOOL bFoundPot = FALSE;
+				/*
+				{
+					char buff[256];
+					for(n=0;n<=9;n++)
+					{
+						sprintf(buff, "g_pottedSpots[%d] = %d", n, g_pottedSpots[n]);
+						ErrorMessage(this, buff);
+					}
+				}
+				*/
+
+#ifdef LOAD_NEXTBALLLIST				
+				// draw 'Next' small balls
+				if(m_snooker->m_cueBallSelect != 2) // if in simulation mode (cueballselect = 2), don't draw!
+				{
+					for(m=0;m<6;m++)
+					{			
+						if(m==0)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f)/*-(18-6+1)*18)*/ + m*18 + 11 + 45+4, 1+8, MGFX_FNTDRAW_CENTER);
+														   
+						bFoundPot = FALSE;
+						for(n=1;n<=6;n++)
+						if(g_pottedSpots[n] == (m+1)) // potted ball?
+						{
+							bFoundPot = TRUE;
+							break;
+						}
+
+						if(!bFoundPot)
+						{
+							//Mgfx_fillrect((m_cx*0.5f-17.4*18) + m*18, 1, 24, 24, Mgfx_rgbcolor(0,0,0));
+							Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[m], (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 45, 1);//-16 + 64 + m*(16+4), -16 + 10);		
+						}
+											
+						sprintf(buffer, "%d", 1+m);
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 11 + 45, 1+22, MGFX_FNTDRAW_CENTER);
+					} // end for m
+					
+					// draw '-' to indicate which ball selected					
+					if(m_snooker->m_cueBallSelect != 0)
+					{
+						int selectBall = m_snooker->m_selectBall;
+						if(selectBall>=1 && selectBall<=15) // object-balls
+						{
+							sprintf(buffer, "-");
+							Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (selectBall-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+						}
+						else if(selectBall == 0) // cue-ball
+						{
+							int colour = m_snooker->m_testBall->m_colour;
+							if(colour>=1 && colour<=15)
+							{
+								sprintf(buffer, "-");
+								Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (colour-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+							}
+						}
+					}
+				}
+#endif //LOAD_NEXTBALLLIST
+
+				// draw spots
+				ballColour = 0;
+				for(m=0;m<16;m++)
+				if(g_pottedSpots[m] != -1)
+				{			
+					ballColour = m_snooker->m_ball[g_pottedSpots[m]]->m_colour;
+
+					//if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+					if(m_snooker->m_bTurn1P)
+						x = 20;			
+					//else if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+					else
+						x = m_cx - 20;
+					
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					if(ballColour>=1)
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+					fy -= 32;
+				}
+			}
+			//**
+			else if(m_snooker->m_customTable->m_type == CTTYPE_10BALL)
+			{
+				int n;
+				int m;
+				int fy = 0;
+				int ballColour = 0;
+				BOOL bFoundPot = FALSE;
+				/*
+				{
+					char buff[256];
+					for(n=0;n<=9;n++)
+					{
+						sprintf(buff, "g_pottedSpots[%d] = %d", n, g_pottedSpots[n]);
+						ErrorMessage(this, buff);
+					}
+				}
+				*/
+
+#ifdef LOAD_NEXTBALLLIST				
+				// draw 'Next' small balls
+				if(m_snooker->m_cueBallSelect != 2) // if in simulation mode (cueballselect = 2), don't draw!
+				{
+					for(m=0;m<10;m++)
+					{			
+						if(m==0)
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, "n", (m_cx*0.5f)/*-(18-6+1)*18)*/ + m*18 + 11 + 45+4, 1+8, MGFX_FNTDRAW_CENTER);
+														   
+						bFoundPot = FALSE;
+						for(n=1;n<=10;n++)
+						if(g_pottedSpots[n] == (m+1)) // potted ball?
+						{
+							bFoundPot = TRUE;
+							break;
+						}
+
+						if(!bFoundPot)
+						{
+							//Mgfx_fillrect((m_cx*0.5f-17.4*18) + m*18, 1, 24, 24, Mgfx_rgbcolor(0,0,0));
+							Mgfx_sprdraw(&m_snooker->m_spritePBallSmall[m], (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 45, 1);//-16 + 64 + m*(16+4), -16 + 10);		
+						}
+											
+						sprintf(buffer, "%d", 1+m);
+						Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f)/*-(17.4-6)*18)*/ + 30 + m*18 + 11 + 45, 1+22, MGFX_FNTDRAW_CENTER);
+					} // end for m
+					
+					// draw '-' to indicate which ball selected					
+					if(m_snooker->m_cueBallSelect != 0)
+					{
+						int selectBall = m_snooker->m_selectBall;
+						if(selectBall>=1 && selectBall<=15) // object-balls
+						{
+							sprintf(buffer, "-");
+							Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (selectBall-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+						}
+						else if(selectBall == 0) // cue-ball
+						{
+							int colour = m_snooker->m_testBall->m_colour;
+							if(colour>=1 && colour<=15)
+							{
+								sprintf(buffer, "-");
+								Mgfx_fntdraw(&m_snooker->m_snkfnt2, buffer, (m_cx*0.5f) + 30 + (colour-1)*18 + 11 + 45, 1+22+6, MGFX_FNTDRAW_CENTER);
+							}
+						}
+					}
+				}
+#endif //LOAD_NEXTBALLLIST
+
+				// draw spots
+				ballColour = 0;
+				for(m=0;m<16;m++)
+				if(g_pottedSpots[m] != -1)
+				{			
+					ballColour = m_snooker->m_ball[g_pottedSpots[m]]->m_colour;
+
+					//if(m_snooker->m_colourseq == 2) // 1P=SPOTS & 2P=STRIPES
+					if(m_snooker->m_bTurn1P)
+						x = 20;			
+					//else if(m_snooker->m_colourseq == 3) // 1P=STRIPES & 2P=SPOTS
+					else
+						x = m_cx - 20;
+					
+					if(!g_WideScreenEnabled)	y = m_cx*0.5f - (1*32);
+						else y = m_cx*0.35f - (1*32);
+
+					if(ballColour>=1)
+					Mgfx_sprdraw(&m_snooker->m_spritePBall[ballColour-1],-16 + x, -16 + y + fy);
+					fy -= 32;
+				}
+			}
+			//**
+		}
+		///////////////////////////////////
+	
+	}
