@@ -6,6 +6,9 @@
 
 using namespace std;
 
+
+// crazy times lol1
+
 unsigned int sum_cubes(unsigned int n) {
 	int res = 0;
 	for (int i = 1; i <= n; ++i) {
